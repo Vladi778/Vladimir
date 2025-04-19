@@ -1,0 +1,734 @@
+<!DOCTYPE html>
+
+<html lang="bg">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>CryptoAnalysis</title>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&amp;display=swap" rel="stylesheet"/>
+<style>
+        body { 
+            font-family: 'Roboto', sans-serif; 
+            background-color: #e9ecef; 
+            margin: 0; 
+        }
+        .top-bar {
+            background-color: #005ff9;
+            color: #fff;
+            padding: 15px;
+            font-size: 24px;
+            font-weight: bold;
+            text-align: left;
+            padding-left: 20px;
+        }
+        .crypto-title {
+            text-align: center;
+            margin: 30px 0;
+        }
+        .project-header {
+            font-size: 2.2em;
+            color: #000000;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+        
+        .project-input {
+            display: block;
+            margin: 10px auto;
+            padding: 12px 25px;
+            font-size: 1.2em;
+            border: 2px solid #075ae0;
+            border-radius: 30px;
+            width: 300px; 
+            transition: all 0.3s ease;
+            background: #fff;
+            text-align: center;
+        }
+        .project-input:focus {
+            outline: none;
+            box-shadow: 0 0 15px rgba(0, 86, 179, 0.2);
+            border-color: #005ff9;
+        }
+        table { 
+            width: 80%; 
+            margin: 20px auto; 
+            border-collapse: collapse; 
+            background: #fff; 
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        th, td { 
+            border: 1px solid #ddd; 
+            padding: 10px; 
+            text-align: center; 
+        }
+        th:first-child, td:first-child { 
+            text-align: left; 
+            padding-left: 10px; 
+        }
+        th { 
+            background: #005ff9;
+            color: #fff; 
+        }
+        select { 
+            padding: 5px; 
+            width: 100%; 
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+       
+        .table-input {
+            padding: 5px;
+            width: 80%;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        textarea.table-input {
+            padding: 5px;
+            width: 80%;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            resize: vertical;
+            min-height: 20px;
+            transition: height 0.2s ease;
+        }
+        textarea.table-input:focus {
+            outline: none;
+            box-shadow: 0 0 5px rgba(0, 86, 179, 0.2);
+        }
+        select.highlight-1 { background-color: #ffcccc; }
+        select.highlight-2 { background-color: #ffe0b3; }
+        select.highlight-3 { background-color: #ccffcc; }
+        select.highlight-1a { background-color: #ffcccc; }
+        select.highlight-2a { background-color: #ffd8b3; }
+        select.highlight-3a { background-color: #f8f688; }
+        select.highlight-4a { background-color: #92d7ff; }
+        select.highlight-5a { background-color: #90f090; }
+        footer { 
+            margin-top: 20px; 
+            font-size: 14px; 
+            color: #555; 
+            text-align: center; 
+        }
+        .total-box { 
+            margin-top: 10px; 
+            font-weight: bold; 
+            text-align: center; 
+            font-size: 18px;
+          
+        }
+        tr:hover { 
+            background-color: #f8f9fa; 
+            transition: background-color 0.3s ease;
+        }
+        
+        a {
+            text-decoration: none;
+            color: #0056b3;
+            transition: all 0.3s ease;
+        }
+        a:hover {
+            color: #0056b3;
+            text-decoration: underline;
+        }
+        
+        @media (max-width: 480px) {
+            .project-input {
+                width: 250px;
+                padding: 10px 20px;
+                font-size: 1em;
+            }
+            .project-header {
+                font-size: 1.8em;
+            }
+        }
+        .pyramid {
+    width: 200px;
+    margin: 40px auto;
+    text-align: center;
+}
+/*пирамида*/
+.pyramid-level {
+    height: 40px;
+    margin: 2px auto;
+    background-color: #ccc;
+    border: 1px solid #333;
+    transition: background-color 0.5s;
+    color: white;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.level-1 { width: 100%; }
+.level-2 { width: 80%; }
+.level-3 { width: 60%; }
+.level-4 { width: 40%; }
+
+.pyramid-level { background-color: #ccc; }
+
+#level1.active { background-color: #eb6763; } 
+#level2.active { background-color: #f0ad4e; } 
+#level3.active { background-color: #5bc0de; } 
+#level4.active { background-color: #83e983; } 
+
+
+    </style>
+<script>
+        function highlightDropdown(select) {
+            select.classList.remove("highlight-1", "highlight-2", "highlight-3");
+            if (select.value == "1") select.classList.add("highlight-1");
+            if (select.value == "2") select.classList.add("highlight-2");
+            if (select.value == "3") select.classList.add("highlight-3");
+            calculateTotal();
+        }
+        function highlightDropdown(select) {
+            select.classList.remove("highlight-1", "highlight-2", "highlight-3");
+            if (select.value == "1") select.classList.add("highlight-1a");
+            if (select.value == "2") select.classList.add("highlight-2a");
+            if (select.value == "3") select.classList.add("highlight-3a");
+            if (select.value == "4") select.classList.add("highlight-4a");
+            if (select.value == "5") select.classList.add("highlight-5a");
+            calculateTotal();
+        }
+
+        function calculateTotal() {
+            const selects = document.querySelectorAll('select');
+            let total = 0;
+            let maxTotal = 0;
+            selects.forEach(select => {
+                total += parseInt(select.value) || 0;
+                
+                let localMax = 0;
+                select.querySelectorAll('option').forEach(option => {
+                    const value = parseInt(option.value) || 0;
+                    if (value > localMax) localMax = value;
+                });
+                maxTotal += localMax;
+            });
+            document.getElementById('total').textContent = `Общо ${total}/${maxTotal}`;
+        }
+        function calculateTotal() {
+    const selects = document.querySelectorAll('select');
+    let total = 0;
+    let maxTotal = 0;
+    selects.forEach(select => {
+        total += parseInt(select.value) || 0;
+        let localMax = 0;
+        select.querySelectorAll('option').forEach(option => {
+            const value = parseInt(option.value) || 0;
+            if (value > localMax) localMax = value;
+        });
+        maxTotal += localMax;
+    });
+    document.getElementById('total').textContent = `Общо ${total}/${maxTotal}`;
+    updatePyramid(total);
+}
+
+function updatePyramid(score) {
+    // Премахваме предишно оцветяване
+    for (let i = 1; i <= 4; i++) {
+        document.getElementById('level' + i).classList.remove('active');
+    }
+
+    // Оцветяване по граници
+    if (score >= 0) document.getElementById('level1').classList.add('active');
+    if (score >= 25) document.getElementById('level2').classList.add('active');
+    if (score >= 50) document.getElementById('level3').classList.add('active');
+    if (score >= 75) document.getElementById('level4').classList.add('active');
+}
+    </script>
+</head>
+<body> 
+<!--Header--> 
+<div class="top-bar">CryptoAnalysis</div>
+<div class="crypto-title">
+<div class="project-header">Анализ на Проект</div>
+<input class="project-input" placeholder="Въведи име на проекта" title="Въведете името на криптопроекта за анализ" type="text"/>
+</div>
+<!--Таблица 1-->
+<h2 style="text-align: center;">Разпределение на предлагането</h2>     
+<table>
+<tr>
+<th>Параметър</th>
+<th>Критерия</th>
+<th>Източник</th>
+<th>Данни</th>
+<th>Оценка (1-3)</th>
+</tr>
+<tr>
+<td>Предлагане в обръщение</td>
+<td>Над 50% от цялото количество</td>
+<td><a href="https://www.coingecko.com" target="_blank">Coingecko</a></td>
+<td><textarea class="table-input" onclick="this.rows=4" placeholder="Въведи данни" rows="1"></textarea></td>
+<td>
+<select onchange="highlightDropdown(this)">
+<option selected="" value="">Избери</option>
+<option value="1">1 - Слабо</option>
+<option value="2">2 - Средно</option>
+<option value="3">3 - Силно</option>
+</select>
+</td>
+</tr>
+<tr>
+<td>Разпределение към инсайдъри </td>
+<td>Под 20% от цялото количество</td>
+<td><a href="https://icodrops.com" target="_blank">ICODrops</a></td>
+<td><textarea class="table-input" onclick="this.rows=4" placeholder="Въведи данни" rows="1"></textarea></td>
+<td>
+<select onchange="highlightDropdown(this)">
+<option selected="" value="">Избери</option>
+<option value="1">1 - Слабо</option>
+<option value="2">2 - Средно</option>
+<option value="3">3 - Силно</option>
+</select>
+</td>
+</tr>
+<tr>
+<td>Прозрачна разбивка на токените</td>
+<td>Ясно етикирани адреси</td>
+<td><a href="https://etherscan.io" target="_blank">Etherscan</a></td>
+<td><textarea class="table-input" onclick="this.rows=4" placeholder="Въведи данни" rows="1"></textarea></td>
+<td>
+<select onchange="highlightDropdown(this)">
+<option selected="" value="">Избери</option> 
+<option value="1">1 - Слабо</option>
+<option value="2">2 - Средно</option>
+<option value="3">3 - Силно</option>
+</select>
+</td>
+</tr>
+<tr>
+<td>Блокирани токени</td>
+<td>Малко заключени токени</td>
+<td><a href="https://cryptorank.io" target="_blank">Cryptorank</a></td>
+<td><textarea class="table-input" onclick="this.rows=4" placeholder="Въведи данни" rows="1"></textarea></td>
+<td>
+<select onchange="highlightDropdown(this)">
+<option selected="" value="">Избери</option>
+<option value="1">1 - Слабо</option>
+<option value="2">2 - Средно</option>
+<option value="3">3 - Силно</option>
+</select>
+</td>
+</tr>
+<tr>
+<td>График</td>
+<td>Постепенен и предвидим</td>
+<td><a href="https://cryptorank.io" target="_blank">Cryptorank</a></td>
+<td><textarea class="table-input" onclick="this.rows=4" placeholder="Въведи данни" rows="1"></textarea></td>
+<td>
+<select onchange="highlightDropdown(this)">
+<option selected="" value="">Избери</option>
+<option value="1">1 - Слабо</option>
+<option value="2">2 - Средно</option>
+<option value="3">3 - Силно</option>
+</select>
+</td>
+</tr>
+</table>
+<!--Таблица 2-->
+<h2 style="text-align: center;">Токеномика</h2>
+<table>
+<tr>
+<th>Параметър</th>
+<th>Източник</th>
+<th>Данни</th>
+<th>Оценка (1-5)</th>
+</tr>
+<tr>
+<td>Ясен механизъм за натрупване на стойност</td>
+<td>Whitepaper, Сайт на проекта, Презентации на инвеститори</td>
+<td><textarea class="table-input" onclick="this.rows=4" placeholder="Въведи данни" rows="1"></textarea></td>
+<td>
+<select onchange="highlightDropdown(this)">
+<option selected="" value="">Избери</option>
+<option value="1">1 - Критично</option>
+<option value="2">2 - Слабо</option>
+<option value="3">3 - Средно</option>
+<option value="4">4 - Добре</option>
+<option value="5">5 - Отлично</option>
+</select>
+</td>
+</tr>
+
+<tr>
+<td>Изгаряне на токени или дефлационен модел</td>
+<td>Whitepaper, Сайт на проекта, Презентации на инвеститори</td>
+<td><textarea class="table-input" onclick="this.rows=4" placeholder="Въведи данни" rows="1"></textarea></td>
+<td>
+    <select onchange="highlightDropdown(this)">
+        <option selected="" value="">Избери</option>
+        <option value="1">1 - Критично</option>
+        <option value="2">2 - Слабо</option>
+        <option value="3">3 - Средно</option>
+        <option value="4">4 - Добре</option>
+        <option value="5">5 - Отлично</option>
+        </select>
+</td>
+</tr>
+<tr>
+<td>Полезност в екосистемата</td>
+<td>Whitepaper, Сайт на проекта, Презентации на инвеститори</td>
+<td><textarea class="table-input" onclick="this.rows=4" placeholder="Въведи данни" rows="1"></textarea></td>
+<td>
+    <select onchange="highlightDropdown(this)">
+        <option selected="" value="">Избери</option>
+        <option value="1">1 - Критично</option>
+        <option value="2">2 - Слабо</option>
+        <option value="3">3 - Средно</option>
+        <option value="4">4 - Добре</option>
+        <option value="5">5 - Отлично</option>
+        </select>
+</td>
+</tr>
+<tr>
+<td>Устойчив икономически модел</td>
+<td>Whitepaper, Сайт на проекта, Презентации на инвеститори</td>
+<td><textarea class="table-input" onclick="this.rows=4" placeholder="Въведи данни" rows="1"></textarea></td>
+<td>
+    <select onchange="highlightDropdown(this)">
+        <option selected="" value="">Избери</option>
+        <option value="1">1 - Критично</option>
+        <option value="2">2 - Слабо</option>
+        <option value="3">3 - Средно</option>
+        <option value="4">4 - Добре</option>
+        <option value="5">5 - Отлично</option>
+        </select>
+    </td>
+</tr>
+</table>
+<!--Таблица 3-->
+<h2 style="text-align: center;">Фундаментални метрики</h2>
+<table>
+<tr>
+<th>Параметър</th>
+<th>Източник</th>
+<th>Данни</th>
+<th>Оценка (1-5)</th>
+</tr>
+<tr>
+<td>Постоянен обем на търговията</td>
+<td><a href="https://tokenterminal.com" target="_blank">Token Terminal</a></td>
+<td><textarea class="table-input" onclick="this.rows=4" placeholder="Въведи данни" rows="1"></textarea></td>
+<td>
+<select onchange="highlightDropdown(this)">
+<option selected="" value="">Избери</option>
+<option value="1">1 - Критично</option>
+<option value="2">2 - Слабо</option>
+<option value="3">3 - Средно</option>
+<option value="4">4 - Добре</option>
+<option value="5">5 - Отлично</option>
+</select>
+</td>
+</tr>
+
+<tr>
+<td>Разтящи обеми от приходи</td>
+<td><a href="https://tokenterminal.com" target="_blank">Token Terminal</a></td>
+<td><textarea class="table-input" onclick="this.rows=4" placeholder="Въведи данни" rows="1"></textarea></td>
+<td>
+    <select onchange="highlightDropdown(this)">
+        <option selected="" value="">Избери</option>
+        <option value="1">1 - Критично</option>
+        <option value="2">2 - Слабо</option>
+        <option value="3">3 - Средно</option>
+        <option value="4">4 - Добре</option>
+        <option value="5">5 - Отлично</option>
+        </select>
+</td>
+</tr>
+<tr>
+<td>Увеличаване на общата заключена стойност</td>
+<td><a href="https://defillama.com" target="_blank">Defi Llama</a></td>
+<td><textarea class="table-input" onclick="this.rows=4" placeholder="Въведи данни" rows="1"></textarea></td>
+<td>
+    <select onchange="highlightDropdown(this)">
+        <option selected="" value="">Избери</option>
+        <option value="1">1 - Критично</option>
+        <option value="2">2 - Слабо</option>
+        <option value="3">3 - Средно</option>
+        <option value="4">4 - Добре</option>
+        <option value="5">5 - Отлично</option>
+        </select>
+</td>
+</tr>
+<tr>
+<td>Приложени on-chain метрики</td>
+<td><a href="https://tokenterminal.com" target="_blank">Token Terminal</a></td>
+<td><textarea class="table-input" onclick="this.rows=4" placeholder="Въведи данни" rows="1"></textarea></td>
+<td>
+    <select onchange="highlightDropdown(this)">
+        <option selected="" value="">Избери</option>
+        <option value="1">1 - Критично</option>
+        <option value="2">2 - Слабо</option>
+        <option value="3">3 - Средно</option>
+        <option value="4">4 - Добре</option>
+        <option value="5">5 - Отлично</option>
+        </select>
+    </td>
+</tr>
+</table>
+<!--Таблица 4-->
+<h2 style="text-align: center;">Пазарен потенциал и добавена стойност</h2>
+<table>
+<tr>
+<th>Параметър</th>
+<th>Източник</th>
+<th>Данни</th>
+<th>Оценка (1-3)</th>
+</tr>
+<tr>
+<td>Текщи пазарни тенденции</td>
+
+<td>*Няма конкретен източник</td>
+<td><textarea class="table-input" onclick="this.rows=4" placeholder="Въведи данни" rows="1"></textarea></td>
+<td>
+<select onchange="highlightDropdown(this)">
+<option selected="" value="">Избери</option>
+<option value="1">1 - Слабо</option>
+<option value="2">2 - Средно</option>
+<option value="3">3 - Силно</option>
+</select>
+</td>
+</tr>
+<tr>
+    <td>Уникално пазарно позициониране</td>
+    
+    <td>*Няма конкретен източник</td>
+    <td><textarea class="table-input" onclick="this.rows=4" placeholder="Въведи данни" rows="1"></textarea></td>
+    <td>
+    <select onchange="highlightDropdown(this)">
+    <option selected="" value="">Избери</option>
+    <option value="1">1 - Слабо</option>
+    <option value="2">2 - Средно</option>
+    <option value="3">3 - Силно</option>
+    </select>
+    </td>
+    </tr>
+    <tr>
+        <td>Силен, убедителен случай на използване</td>
+        
+        <td>*Няма конкретен източник</td>
+        <td><textarea class="table-input" onclick="this.rows=4" placeholder="Въведи данни" rows="1"></textarea></td>
+        <td>
+        <select onchange="highlightDropdown(this)">
+        <option selected="" value="">Избери</option>
+        <option value="1">1 - Слабо</option>
+        <option value="2">2 - Средно</option>
+        <option value="3">3 - Силно</option>
+        </select>
+        </td>
+        </tr>
+        <tr>
+            <td>Потенциал за масова адопция</td>
+            
+            <td>*Няма конкретен източник</td>
+            <td><textarea class="table-input" onclick="this.rows=4" placeholder="Въведи данни" rows="1"></textarea></td>
+            <td>
+            <select onchange="highlightDropdown(this)">
+            <option selected="" value="">Избери</option>
+            <option value="1">1 - Слабо</option>
+            <option value="2">2 - Средно</option>
+            <option value="3">3 - Силно</option>
+            </select>
+            </td>
+            </tr>
+            <tr>
+                <td>Ясно разграничаване от конкуренцията </td>
+                
+                <td>*Няма конкретен източник</td>
+                <td><textarea class="table-input" onclick="this.rows=4" placeholder="Въведи данни" rows="1"></textarea></td>
+                <td>
+                <select onchange="highlightDropdown(this)">
+                <option selected="" value="">Избери</option>
+                <option value="1">1 - Слабо</option>
+                <option value="2">2 - Средно</option>
+                <option value="3">3 - Силно</option>
+            </select>
+        </td>
+    </tr>
+    </table>
+   <!--Таблица 5-->
+    <h2 style="text-align: center;">Екип и управление</h2>
+<table>
+<tr>
+<th>Параметър</th>
+<th>Източник</th>
+<th>Данни</th>
+<th>Оценка (1-3)</th>
+</tr>
+<tr>
+<td>Доказан опит в областта</td>
+
+<td>*Няма конкретен източник</td>
+<td><textarea class="table-input" onclick="this.rows=4" placeholder="Въведи данни" rows="1"></textarea></td>
+<td>
+<select onchange="highlightDropdown(this)">
+<option selected="" value="">Избери</option>
+<option value="1">1 - Слабо</option>
+<option value="2">2 - Средно</option>
+<option value="3">3 - Силно</option>
+</select>
+</td>
+</tr>
+<tr>
+    <td>История и публичен образ на екипа</td>
+    
+    <td>*Няма конкретен източник</td>
+    <td><textarea class="table-input" onclick="this.rows=4" placeholder="Въведи данни" rows="1"></textarea></td>
+    <td>
+    <select onchange="highlightDropdown(this)">
+    <option selected="" value="">Избери</option>
+    <option value="1">1 - Слабо</option>
+    <option value="2">2 - Средно</option>
+    <option value="3">3 - Силно</option>
+    </select>
+    </td>
+    </tr>
+    <tr>
+        <td>Редовни актуализации на проекта</td>
+        
+        <td>*Няма конкретен източник</td>
+        <td><textarea class="table-input" onclick="this.rows=4" placeholder="Въведи данни" rows="1"></textarea></td>
+        <td>
+        <select onchange="highlightDropdown(this)">
+        <option selected="" value="">Избери</option>
+        <option value="1">1 - Слабо</option>
+        <option value="2">2 - Средно</option>
+        <option value="3">3 - Силно</option>
+        </select>
+        </td>
+        </tr>
+        <tr>
+            <td>Активно участие на общността</td>
+            
+            <td>*Няма конкретен източник</td>
+            <td><textarea class="table-input" onclick="this.rows=4" placeholder="Въведи данни" rows="1"></textarea></td>
+            <td>
+            <select onchange="highlightDropdown(this)">
+            <option selected="" value="">Избери</option>
+            <option value="1">1 - Слабо</option>
+            <option value="2">2 - Средно</option>
+            <option value="3">3 - Силно</option>
+            </select>
+            </td>
+            </tr>
+            <tr>
+                <td>Ясен модел на управление </td>
+                
+                <td>*Няма конкретен източник</td>
+                <td><textarea class="table-input" onclick="this.rows=4" placeholder="Въведи данни" rows="1"></textarea></td>
+                <td>
+                <select onchange="highlightDropdown(this)">
+                <option selected="" value="">Избери</option>
+                <option value="1">1 - Слабо</option>
+                <option value="2">2 - Средно</option>
+                <option value="3">3 - Силно</option>
+            </select>
+        </td>
+    </tr>
+    </table>
+    <!--ТАБЛИЦА 6 -->
+    <h2 style="text-align: center;">Ценова динамика</h2>
+    <table>
+    <tr>
+    <th>Параметър</th>
+    <th>Източник</th>
+    <th>Данни</th>
+    <th>Оценка (1-3)</th>
+    </tr>
+    <tr>
+    <td>Представяне спрямо USD</td>
+    
+    <td><a href="https://www.tradingview.com" target="_blank">Trading View</a></td>
+    <td><textarea class="table-input" onclick="this.rows=4" placeholder="Въведи данни" rows="1"></textarea></td>
+    <td>
+    <select onchange="highlightDropdown(this)">
+    <option selected="" value="">Избери</option>
+    <option value="1">1 - Слабо</option>
+    <option value="2">2 - Средно</option>
+    <option value="3">3 - Силно</option>
+    </select>
+    </td>
+    </tr>
+    <tr>
+        <td>Представяне спрямо Bitcoin</td>
+        
+        <td><a href="https://www.tradingview.com" target="_blank">Trading View</a></td>
+        <td><textarea class="table-input" onclick="this.rows=4" placeholder="Въведи данни" rows="1"></textarea></td>
+        <td>
+        <select onchange="highlightDropdown(this)">
+        <option selected="" value="">Избери</option>
+        <option value="1">1 - Слабо</option>
+        <option value="2">2 - Средно</option>
+        <option value="3">3 - Силно</option>
+        </select>
+        </td>
+        </tr>
+        <tr>
+            <td>Постоянен обен на търговия</td>
+            
+            <td>*Няма конкретен източник</td>
+            <td><textarea class="table-input" onclick="this.rows=4" placeholder="Въведи данни" rows="1"></textarea></td>
+            <td>
+            <select onchange="highlightDropdown(this)">
+            <option selected="" value="">Избери</option>
+            <option value="1">1 - Слабо</option>
+            <option value="2">2 - Средно</option>
+            <option value="3">3 - Силно</option>
+            </select>
+            </td>
+            </tr>
+            <tr>
+                <td>Здрави нива на нподкрепа на цената</td>
+                
+                <td>*Няма конкретен източник</td>
+                <td><textarea class="table-input" onclick="this.rows=4" placeholder="Въведи данни" rows="1"></textarea></td>
+                <td>
+                <select onchange="highlightDropdown(this)">
+                <option selected="" value="">Избери</option>
+                <option value="1">1 - Слабо</option>
+                <option value="2">2 - Средно</option>
+                <option value="3">3 - Силно</option>
+                </select>
+                </td>
+                </tr>
+                <tr>
+                    <td>Разумна волатилност</td>
+                    
+                    <td>*Няма конкретен източник</td>
+                    <td><textarea class="table-input" onclick="this.rows=4" placeholder="Въведи данни" rows="1"></textarea></td>
+                    <td>
+                    <select onchange="highlightDropdown(this)">
+                    <option selected="" value="">Избери</option>
+                    <option value="1">1 - Слабо</option>
+                    <option value="2">2 - Средно</option>
+                    <option value="3">3 - Силно</option>
+                </select>
+            </td>
+        </tr>
+        </table>
+        <!--Резултат-->
+
+                <div class="total-box" id="total">Общо: 0</div><br><br>
+              
+              
+                <div class="pyramid">
+                    <div id="level4" class="pyramid-level level-4">Отлично</div>
+                    <div id="level3" class="pyramid-level level-3">Добро</div>
+                    <div id="level2" class="pyramid-level level-2">Слабо</div>
+                    <div id="level1" class="pyramid-level level-1">Критично</div>
+                </div>
+
+                
+                  
+
+
+
+<footer>
+        © 2025 Vladimir Mihaylov <br><br><br><br>
+    </footer>
+</body>
+</html>
